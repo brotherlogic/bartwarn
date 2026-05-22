@@ -21,6 +21,9 @@ curl -fsSL https://antigravity.google/cli/install.sh | bash
 git config --global user.email "brotherlogicautomation@gmail.com"
 git config --global user.name "Brotherlogic Automation"
 
+# Install gh extension for sub-issues
+gh extension install yahsan2/gh-sub-issue
+
 TMUX_BLOCK=$(cat << 'EOF'
 if [ -z "$TMUX" ] && [ -n "$PS1" ]; then
   cd /workspaces/bartwarn
