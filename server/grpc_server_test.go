@@ -5,16 +5,21 @@ import (
 	"testing"
 
 	"github.com/brotherlogic/bartwarn/api"
+	"github.com/brotherlogic/bartwarn/router"
 	"github.com/brotherlogic/bartwarn/server"
 )
 
 // MockRouter simulates the routing engine dependency
 type MockRouter struct {
-	called bool
+	called       bool
+	suppressPing bool
 }
 
 func (m *MockRouter) FindRoute(ctx context.Context, stationId string) (string, error) {
 	m.called = true
+	if m.suppressPing {
+		return "", router.ErrSuppressSMS
+	}
 	return "Mock SMS Message", nil
 }
 
@@ -29,27 +34,41 @@ func (m *MockNotifier) SendSMS(message string) error {
 }
 
 func TestRecordLocation_Success(t *testing.T) {
-	router := &MockRouter{}
-	notifier := &MockNotifier{}
+	r := &MockRouter{}
+	n := &MockNotifier{}
 
-	// Create the server injecting our mocks
-	srv := server.NewBartwarnServer(router, notifier)
+	srv := server.NewBartwarnServer(r, n)
+	req := &api.LocationRequest{StationId: "MONT"}
 
-	req := &api.LocationRequest{
-		StationId: "MONT",
-	}
-
-	// Call the gRPC method
 	_, err := srv.RecordLocation(context.Background(), req)
 	if err != nil {
 		t.Fatalf("Unexpected error from RecordLocation: %v", err)
 	}
 
-	// Verify our dependencies were invoked
-	if !router.called {
-		t.Errorf("Expected router.FindRoute to be called")
+	if !r.called {
+		t.Errorf("Expected router to be called")
 	}
-	if !notifier.called {
-		t.Errorf("Expected notifier.SendSMS to be called")
+	if !n.called {
+		t.Errorf("Expected notifier to be called")
+	}
+}
+
+func TestRecordLocation_SuppressSMS(t *testing.T) {
+	r := &MockRouter{suppressPing: true}
+	n := &MockNotifier{}
+
+	srv := server.NewBartwarnServer(r, n)
+	req := &api.LocationRequest{StationId: "MONT"}
+
+	_, err := srv.RecordLocation(context.Background(), req)
+	if err != nil {
+		t.Fatalf("Unexpected error from RecordLocation when suppressing: %v", err)
+	}
+
+	if !r.called {
+		t.Errorf("Expected router to be called")
+	}
+	if n.called {
+		t.Errorf("Expected notifier NOT to be called")
 	}
 }
