@@ -40,7 +40,7 @@ func (s *SMTPNotifier) SendSMS(message string) error {
 	}
 
 	// Construct RFC 822 formatted email
-	body := fmt.Sprintf("To: %s\r\nSubject: \r\n\r\n%s", s.targetEmail, message)
+	body := fmt.Sprintf("To: %s\r\nSubject: BART Alert\r\n\r\n%s", s.targetEmail, message)
 
 	err := sendMailFunc(addr, auth, s.fromEmail, []string{s.targetEmail}, []byte(body))
 	if err != nil {

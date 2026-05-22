@@ -45,6 +45,9 @@ func TestSendSMS_Success(t *testing.T) {
 	if !strings.Contains(msgStr, "To: target@vtext.com") {
 		t.Errorf("Message missing To header: %s", msgStr)
 	}
+	if !strings.Contains(msgStr, "Subject: BART Alert") {
+		t.Errorf("Message missing Subject header: %s", msgStr)
+	}
 	if !strings.Contains(msgStr, "\r\n\r\nTest warning message") {
 		t.Errorf("Message missing body: %s", msgStr)
 	}

@@ -49,12 +49,22 @@ func main() {
 		slog.Warn("SMTP_HOST is not set; SMS notification will likely fail")
 	}
 
+	smtpPort := os.Getenv("SMTP_PORT")
+	if smtpPort == "" {
+		smtpPort = "587" // Default to standard STARTTLS port
+	}
+
+	targetEmail := os.Getenv("TARGET_SMS_EMAIL")
+	if targetEmail == "" {
+		slog.Warn("TARGET_SMS_EMAIL is not set; SMS notification will likely fail")
+	}
+
 	notifierClient := notifier.NewSMTPNotifier(
 		smtpHost,
-		os.Getenv("SMTP_PORT"),
+		smtpPort,
 		os.Getenv("SMTP_USER"),
 		os.Getenv("SMTP_PASSWORD"),
-		os.Getenv("TARGET_SMS_EMAIL"),
+		targetEmail,
 		os.Getenv("SMTP_FROM_EMAIL"),
 	)
 	
