@@ -1,3 +1,5 @@
-*~
-.devcontainer/.env.auth
-.antigravitycli
+# Binaries
+bartwarn
+
+# Go workspace file
+go.work

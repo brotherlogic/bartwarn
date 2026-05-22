@@ -13,9 +13,9 @@ type MockRouter struct {
 	called bool
 }
 
-func (m *MockRouter) FindRoute(stationId string) error {
+func (m *MockRouter) FindRoute(ctx context.Context, stationId string) (string, error) {
 	m.called = true
-	return nil
+	return "Mock SMS Message", nil
 }
 
 // MockNotifier simulates the SMS notification dependency
