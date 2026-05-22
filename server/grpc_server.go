@@ -2,14 +2,16 @@ package server
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/brotherlogic/bartwarn/api"
+	"github.com/brotherlogic/bartwarn/router"
 )
 
 // Router represents the routing engine module (Issue #4)
 type Router interface {
-	FindRoute(stationId string) error
+	FindRoute(ctx context.Context, stationId string) (string, error)
 }
 
 // Notifier represents the SMS notification module (Issue #5)
@@ -41,14 +43,18 @@ func (s *BartwarnServer) RecordLocation(ctx context.Context, req *api.LocationRe
 	)
 
 	// Delegate to the routing engine
-	err := s.router.FindRoute(req.StationId)
+	msg, err := s.router.FindRoute(ctx, req.StationId)
 	if err != nil {
+		if errors.Is(err, router.ErrSuppressSMS) {
+			slog.Info("Suppressing SMS due to cache TTL or grace period rules")
+			return &api.LocationResponse{}, nil
+		}
 		slog.Error("Router failed to find route", "error", err)
 		return nil, err
 	}
 
 	// Delegate to the SMS notification client
-	err = s.notifier.SendSMS("Ping received for station: " + req.StationId)
+	err = s.notifier.SendSMS(msg)
 	if err != nil {
 		slog.Error("Notifier failed to send SMS", "error", err)
 		return nil, err

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net"
@@ -15,9 +16,9 @@ import (
 
 // Dummy implementations for unbuilt modules
 type dummyRouter struct{}
-func (r *dummyRouter) FindRoute(stationId string) error {
+func (r *dummyRouter) FindRoute(ctx context.Context, stationId string) (string, error) {
 	slog.Info("Dummy Router called", "stationId", stationId)
-	return nil
+	return "Dummy message from main.go", nil
 }
 
 type dummyNotifier struct{}
