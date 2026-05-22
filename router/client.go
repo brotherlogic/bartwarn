@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // BARTClient interacts with the public BART API
@@ -26,7 +28,7 @@ func NewBARTClient(baseURL, apiKey string) *BARTClient {
 	return &BARTClient{
 		baseURL: baseURL,
 		apiKey:  apiKey,
-		client:  &http.Client{},
+		client:  &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
@@ -69,7 +71,8 @@ func (c *BARTClient) FetchTrips(ctx context.Context, origin, destination string)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected API status code: %d", resp.StatusCode)
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected API status code: %d, body: %s", resp.StatusCode, string(bodyBytes))
 	}
 
 	var parsedResp bartResponse

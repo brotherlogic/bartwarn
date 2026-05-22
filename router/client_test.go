@@ -128,3 +128,30 @@ func TestFetchTrips_Success(t *testing.T) {
 		t.Errorf("Expected transfer at 19TH, got %s", trips[1].Legs[0].Destination)
 	}
 }
+
+func TestFetchTrips_ErrorCases(t *testing.T) {
+	// 1. Non-200 status code
+	tsError := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("internal server error"))
+	}))
+	defer tsError.Close()
+
+	client1 := router.NewBARTClient(tsError.URL, "fake-api-key")
+	_, err := client1.FetchTrips(context.Background(), "MONT", "PLZA")
+	if err == nil {
+		t.Errorf("Expected error for non-200 status code, got nil")
+	}
+
+	// 2. Malformed JSON
+	tsBadJSON := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("{ bad json "))
+	}))
+	defer tsBadJSON.Close()
+
+	client2 := router.NewBARTClient(tsBadJSON.URL, "fake-api-key")
+	_, err = client2.FetchTrips(context.Background(), "MONT", "PLZA")
+	if err == nil {
+		t.Errorf("Expected error for malformed JSON, got nil")
+	}
+}
