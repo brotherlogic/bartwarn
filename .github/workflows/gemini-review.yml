@@ -1,0 +1,56 @@
+name: Gemini Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gemini Code Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "GEMINI_API_KEY is not set in secrets. Skipping review."
+            exit 0
+          fi
+          
+          # Fetch the diff of the pull request using the GitHub CLI
+          DIFF=$(gh pr diff ${{ github.event.pull_request.number }})
+          
+          if [ -z "$DIFF" ]; then
+            echo "Empty diff. Skipping."
+            exit 0
+          fi
+          
+          # Construct the JSON payload for the Gemini API using jq to properly escape the diff
+          PAYLOAD=$(jq -n --arg diff "You are an expert code reviewer. Please review the following git diff and provide concise feedback on bugs, security issues, and best practices. Do not nitpick on style formatting unless it's critical. Output your review in Markdown format.\n\n$DIFF" \
+            '{contents: [{parts: [{text: $diff}]}]}')
+            
+          # Call the Gemini 2.5 Flash API (cheapest model)
+          RESPONSE=$(curl -s -H "Content-Type: application/json" \
+               -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$GEMINI_API_KEY" \
+               -d "$PAYLOAD")
+               
+          # Extract the generated text response
+          COMMENT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty')
+          
+          if [ -n "$COMMENT" ]; then
+            # Post the review as a comment on the PR
+            echo -e "### 🤖 Gemini Code Review\n\n$COMMENT" > review.md
+            gh pr comment ${{ github.event.pull_request.number }} -F review.md
+          else
+            echo "Failed to get review from Gemini. API Response:"
+            echo "$RESPONSE"
+          fi
