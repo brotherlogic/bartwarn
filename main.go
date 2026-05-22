@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/brotherlogic/bartwarn/api"
+	"github.com/brotherlogic/bartwarn/notifier"
 	"github.com/brotherlogic/bartwarn/server"
 	"google.golang.org/grpc"
 )
@@ -42,9 +43,22 @@ func main() {
 	grpcServer := grpc.NewServer()
 	
 	router := &dummyRouter{}
-	notifier := &dummyNotifier{}
+
+	smtpHost := os.Getenv("SMTP_HOST")
+	if smtpHost == "" {
+		slog.Warn("SMTP_HOST is not set; SMS notification will likely fail")
+	}
+
+	notifierClient := notifier.NewSMTPNotifier(
+		smtpHost,
+		os.Getenv("SMTP_PORT"),
+		os.Getenv("SMTP_USER"),
+		os.Getenv("SMTP_PASSWORD"),
+		os.Getenv("TARGET_SMS_EMAIL"),
+		os.Getenv("SMTP_FROM_EMAIL"),
+	)
 	
-	bartwarnServer := server.NewBartwarnServer(router, notifier)
+	bartwarnServer := server.NewBartwarnServer(router, notifierClient)
 	api.RegisterLocationServiceServer(grpcServer, bartwarnServer)
 
 	// Start server in a goroutine so it doesn't block
