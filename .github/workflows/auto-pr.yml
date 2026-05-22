@@ -1,0 +1,42 @@
+name: Auto Create PR
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN }}
+        run: |
+          # Get the branch name from the ref
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          
+          # Check if a PR already exists for this branch
+          PR_EXISTS=$(gh pr list --head "$BRANCH_NAME" --json number --jq 'length')
+          
+          if [ "$PR_EXISTS" -eq "0" ]; then
+            echo "No PR exists for branch $BRANCH_NAME. Creating one..."
+            
+            # Create the PR and assign it to the author of the push
+            gh pr create \
+              --base main \
+              --head "$BRANCH_NAME" \
+              --title "Auto PR: $BRANCH_NAME" \
+              --body "Automated PR created by GitHub Actions for branch push by @${{ github.actor }}." \
+              --assignee "${{ github.actor }}"
+          else
+            echo "PR already exists for branch $BRANCH_NAME. Skipping."
+          fi
