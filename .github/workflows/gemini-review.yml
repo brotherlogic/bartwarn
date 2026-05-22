@@ -38,9 +38,9 @@ jobs:
           PAYLOAD=$(jq -n --arg diff "You are an expert code reviewer. Please review the following git diff and provide concise feedback on bugs, security issues, and best practices. Do not nitpick on style formatting unless it's critical. Output your review in Markdown format.\n\n$DIFF" \
             '{contents: [{parts: [{text: $diff}]}]}')
             
-          # Call the Gemini 2.5 Pro API
+          # Call the Gemini 2.5 Flash API (cheapest model)
           RESPONSE=$(curl -s -H "Content-Type: application/json" \
-               -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=$GEMINI_API_KEY" \
+               -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$GEMINI_API_KEY" \
                -d "$PAYLOAD")
                
           # Extract the generated text response
