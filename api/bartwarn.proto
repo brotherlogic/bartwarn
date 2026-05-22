@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package brotherlogic.bartwarn.api;
+option go_package = "github.com/brotherlogic/bartwarn/api";
+
+service LocationService {
+  rpc RecordLocation(LocationRequest) returns (LocationResponse);
+}
+
+message LocationRequest {
+  // The BART API abbreviation for the station, e.g., "MONT"
+  string station_id = 1;
+  
+  // Optional: The geographic coordinates when the trigger fired
+  double latitude = 2;
+  double longitude = 3;
+}
+
+message LocationResponse {
+  // Empty response. Errors are sent via standard gRPC error codes.
+}
