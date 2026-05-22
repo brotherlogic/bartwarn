@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/brotherlogic/bartwarn/api"
 	"github.com/brotherlogic/bartwarn/server"
@@ -44,9 +46,21 @@ func main() {
 	bartwarnServer := server.NewBartwarnServer(router, notifier)
 	api.RegisterLocationServiceServer(grpcServer, bartwarnServer)
 
-	slog.Info("Starting gRPC Server", "port", port)
-	if err := grpcServer.Serve(listener); err != nil {
-		slog.Error("Failed to serve gRPC", "error", err)
-		os.Exit(1)
-	}
+	// Start server in a goroutine so it doesn't block
+	go func() {
+		slog.Info("Starting gRPC Server", "port", port)
+		if err := grpcServer.Serve(listener); err != nil {
+			slog.Error("Failed to serve gRPC", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Wait for OS interrupt signals for graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	slog.Info("Shutting down gRPC server gracefully...")
+	grpcServer.GracefulStop()
+	slog.Info("Server stopped")
 }
