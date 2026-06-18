@@ -19,7 +19,7 @@
 	"postCreateCommand": "./postCreate.sh",
 	"workspaceFolder": "/workspaces/bartwarn",
 	"workingDir": "/workspaces/bartwarn",
-	"initializeCommand": "echo \"GH_TOKEN=$(gh auth token)\" > .devcontainer/.env.auth",
+        "initializeCommand": "cat ~/.seraphine-automation > .devcontainer/.env.auth",
 	"containerEnv": {
 		"DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
 		"GH_GIT_PROTOCOL": "ssh",
