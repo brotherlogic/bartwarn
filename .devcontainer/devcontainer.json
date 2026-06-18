@@ -1,38 +1,47 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+// README at: https://github.com/devcontainers/templates/tree/main/src/go
 {
 	"name": "Bartwarn",
-	"image": "mcr.microsoft.com/devcontainers/base:noble",
+	"image": "mcr.microsoft.com/devcontainers/go:1.26-trixie",
 	"features": {
-		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/nils-geistmann/devcontainers-features/zsh:0": {},
-		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers/features/common-utils": "2",
-		"ghcr.io/devcontainers-extra/features/protoc:1": {}
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installOhMyZsh": true,
+			"installZsh": true,
+			"configureZshAsDefaultShell": true
+		},
+		"ghcr.io/devcontainers-extra/features/protoc:1": {},
+		"ghcr.io/siri404/devcontainer-ai-features/gemini-cli:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "latest",
+			"installDirectlyFromGitHubRelease": true
+		}
 	},
 	"postCreateCommand": "./postCreate.sh",
 	"workspaceFolder": "/workspaces/bartwarn",
 	"workingDir": "/workspaces/bartwarn",
-	"initializeCommand": "echo \"GH_TOKEN=$(gh auth token)\" > .devcontainer/.env.auth",
-	"runArgs": [
-		"--security-opt",
-	    "label=disable",
-	    "--env-file",
-		"${localWorkspaceFolder}/.devcontainer/.env.auth"
-	],
+        "initializeCommand": "cat ~/.seraphine-automation > .devcontainer/.env.auth",
 	"containerEnv": {
 		"DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
 		"GH_GIT_PROTOCOL": "ssh",
+		"LANG": "en_US.UTF-8",
+		"LC_ALL": "en_US.UTF-8",
 		"TZ": "America/Los_Angeles"
 	},
+	"runArgs": [
+		"--security-opt",
+		"label=disable",
+		"--env-file",
+		"${localWorkspaceFolder}/.devcontainer/.env.auth"
+	],
 	"mounts": [
 		{
 			"source": "${localEnv:HOME}/.ssh",
-			"target": "/home/vscode/.ssh", 
+			"target": "/home/vscode/.ssh",
 			"type": "bind",
-			"options": "readonly" 
+			"options": "readonly"
 		},
 		"source=/var/run/dbus,target=/var/run/dbus,type=bind",
-		"source=/run/user,target=/run/user,type=bind"
+		"source=/run/user,target=/run/user,type=bind",
+		"source=${localEnv:HOME}/.gemini,target=/home/vscode/.gemini,type=bind"
 	]
 }
