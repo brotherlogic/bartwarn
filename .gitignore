@@ -3,3 +3,4 @@ bartwarn
 
 # Go workspace file
 go.work
+.devcontainer/.env.auth
