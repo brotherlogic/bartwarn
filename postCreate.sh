@@ -3,7 +3,8 @@
 export GOPATH=/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
-sudo apt install -y  protobuf-compiler xdg-utils 
+sudo apt-get update
+sudo apt install -y  protobuf-compiler xdg-utils
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest 
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
