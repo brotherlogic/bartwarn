@@ -28,7 +28,6 @@
 		"TZ": "America/Los_Angeles"
 	},
 	"runArgs": [
-		"--network=host",
 		"--security-opt",
 		"label=disable",
 		"--env-file",
