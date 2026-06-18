@@ -1,5 +1,5 @@
 # Binaries
-bartwarn
+/bartwarn
 
 # Go workspace file
 go.work

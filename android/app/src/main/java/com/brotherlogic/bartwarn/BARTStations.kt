@@ -1,0 +1,63 @@
+package com.brotherlogic.bartwarn
+
+data class BARTStation(
+    val id: String,
+    val name: String,
+    val lat: Double,
+    val lng: Double
+)
+
+object BARTStations {
+    val stations = listOf(
+        BARTStation("12th", "12th St. Oakland City Center", 37.803664, -122.271604),
+        BARTStation("16th", "16th St. Mission", 37.765062, -122.419694),
+        BARTStation("19th", "19th St. Oakland", 37.80787, -122.269029),
+        BARTStation("24th", "24th St. Mission", 37.752254, -122.418466),
+        BARTStation("ashb", "Ashby", 37.853024, -122.26978),
+        BARTStation("antc", "Antioch", 37.996281, -121.780399),
+        BARTStation("balb", "Balboa Park", 37.72198087, -122.4474142),
+        BARTStation("bayf", "Bay Fair", 37.697185, -122.126514),
+        BARTStation("bery", "Berryessa/North San Jose", 37.368361, -121.874655),
+        BARTStation("cast", "Castro Valley", 37.690754, -122.075567),
+        BARTStation("civc", "Civic Center/UN Plaza", 37.779528, -122.413756),
+        BARTStation("cols", "Coliseum", 37.754006, -122.197273),
+        BARTStation("colm", "Colma", 37.684638, -122.466233),
+        BARTStation("conc", "Concord", 37.973737, -122.029095),
+        BARTStation("daly", "Daly City", 37.70612055, -122.4690807),
+        BARTStation("dbrk", "Downtown Berkeley", 37.869867, -122.268045),
+        BARTStation("dubl", "Dublin/Pleasanton", 37.701695, -121.900367),
+        BARTStation("deln", "El Cerrito del Norte", 37.925655, -122.317269),
+        BARTStation("plza", "El Cerrito Plaza", 37.903059, -122.299278),
+        BARTStation("embr", "Embarcadero", 37.792976, -122.396742),
+        BARTStation("frmt", "Fremont", 37.557355, -121.9764),
+        BARTStation("ftvl", "Fruitvale", 37.774963, -122.224274),
+        BARTStation("glen", "Glen Park", 37.732921, -122.434092),
+        BARTStation("hayw", "Hayward", 37.670399, -122.087967),
+        BARTStation("lafy", "Lafayette", 37.893394, -122.123801),
+        BARTStation("lake", "Lake Merritt", 37.797484, -122.265609),
+        BARTStation("mcar", "MacArthur", 37.828415, -122.267227),
+        BARTStation("mlbr", "Millbrae", 37.599787, -122.38666),
+        BARTStation("milp", "Milpitas", 37.410277, -121.891081),
+        BARTStation("mont", "Montgomery St.", 37.789256, -122.401407),
+        BARTStation("nbrk", "North Berkeley", 37.87404, -122.283451),
+        BARTStation("ncon", "North Concord/Martinez", 38.003275, -122.024597),
+        BARTStation("oakl", "Oakland International Airport", 37.71297174, -122.21244024),
+        BARTStation("orin", "Orinda", 37.87836087, -122.1837911),
+        BARTStation("pitt", "Pittsburg/Bay Point", 38.018914, -121.945154),
+        BARTStation("pctr", "Pittsburg Center", 38.018227, -121.890178),
+        BARTStation("phil", "Pleasant Hill/Contra Costa Centre", 37.928403, -122.056013),
+        BARTStation("powl", "Powell St.", 37.784991, -122.406857),
+        BARTStation("rich", "Richmond", 37.936887, -122.353165),
+        BARTStation("rock", "Rockridge", 37.844601, -122.251793),
+        BARTStation("sbrn", "San Bruno", 37.637753, -122.416038),
+        BARTStation("sfia", "San Francisco International Airport", 37.616035, -122.392612),
+        BARTStation("sanl", "San Leandro", 37.722619, -122.157311),
+        BARTStation("shay", "South Hayward", 37.634799, -122.057551),
+        BARTStation("ssan", "South San Francisco", 37.664174, -122.444116),
+        BARTStation("ucty", "Union City", 37.591208, -122.017867),
+        BARTStation("warm", "Warm Springs/South Fremont", 37.502171, -121.939313),
+        BARTStation("wcrk", "Walnut Creek", 37.905628, -122.067423),
+        BARTStation("wdub", "West Dublin/Pleasanton", 37.699759, -121.928099),
+        BARTStation("woak", "West Oakland", 37.80467476, -122.2945822)
+    )
+}
