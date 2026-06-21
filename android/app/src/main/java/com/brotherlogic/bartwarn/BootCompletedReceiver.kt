@@ -9,19 +9,22 @@ import com.google.android.gms.location.LocationServices
 
 class BootCompletedReceiver : BroadcastReceiver() {
 
-    internal fun handleBootCompleted(context: Context, geofenceManager: GeofenceManager) {
-        Log.d("BootCompletedReceiver", "ACTION_BOOT_COMPLETED received. Re-registering geofences.")
-        
+    internal fun createGeofencePendingIntent(context: Context): PendingIntent {
         val geofenceIntent = Intent("com.brotherlogic.bartwarn.ACTION_GEOFENCE_EVENT")
         geofenceIntent.setPackage(context.packageName)
-        
-        val pendingIntent = PendingIntent.getBroadcast(
+        return PendingIntent.getBroadcast(
             context,
             0,
             geofenceIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        
+    }
+
+    internal fun handleBootCompleted(
+        geofenceManager: GeofenceManager,
+        pendingIntent: PendingIntent
+    ) {
+        Log.d("BootCompletedReceiver", "ACTION_BOOT_COMPLETED received. Re-registering geofences.")
         geofenceManager.addGeofences(
             pendingIntent = pendingIntent,
             onSuccess = {
@@ -37,7 +40,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             val geofencingClient = LocationServices.getGeofencingClient(context)
             val geofenceManager = GeofenceManager(geofencingClient)
-            handleBootCompleted(context, geofenceManager)
+            val pendingIntent = createGeofencePendingIntent(context)
+            handleBootCompleted(geofenceManager, pendingIntent)
         }
     }
 }
