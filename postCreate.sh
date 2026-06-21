@@ -13,7 +13,9 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 tic -x ghostty.terminfo
 
 # Install antigravity
-curl -fsSL https://antigravity.google/cli/install.sh | bash
+curl -fsSL -o /tmp/install_agy.sh https://antigravity.google/cli/install.sh
+bash /tmp/install_agy.sh
+rm /tmp/install_agy.sh
 
 # Set git identity
 git config --global user.email "brotherlogicautomation@gmail.com"
