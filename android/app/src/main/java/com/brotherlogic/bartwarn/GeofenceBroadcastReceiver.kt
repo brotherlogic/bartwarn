@@ -36,7 +36,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
             if (currentTime - lastTriggerTime >= COOLDOWN_MILLIS) {
                 // Update timestamp
-                sharedPreferences.edit().putLong(stationId, currentTime).commit()
+                sharedPreferences.edit().putLong(stationId, currentTime).apply()
 
                 // Enqueue worker
                 val constraints = androidx.work.Constraints.Builder()
