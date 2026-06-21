@@ -30,14 +30,13 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         }
 
         val sharedPreferences = context.getSharedPreferences("geofence_cooldown", Context.MODE_PRIVATE)
-        val cooldownMillis = 10 * 60 * 1000L // 10 minutes
 
         for (stationId in stationIds) {
             val lastTriggerTime = sharedPreferences.getLong(stationId, 0L)
 
-            if (currentTime - lastTriggerTime >= cooldownMillis) {
+            if (currentTime - lastTriggerTime >= COOLDOWN_MILLIS) {
                 // Update timestamp
-                sharedPreferences.edit().putLong(stationId, currentTime).apply()
+                sharedPreferences.edit().putLong(stationId, currentTime).commit()
 
                 // Enqueue worker
                 val constraints = androidx.work.Constraints.Builder()
@@ -54,5 +53,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 android.util.Log.d("GeofenceReceiver", "Skipping ping for $stationId due to cooldown")
             }
         }
+    }
+
+    companion object {
+        private const val COOLDOWN_MILLIS = 10 * 60 * 1000L // 10 minutes
     }
 }
